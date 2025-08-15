@@ -33,11 +33,10 @@ jobs:
     - name: Install dependencies
       run: pnpm install
       
-    - name: Create .env file
+    - name: Create .env file from environment secrets
       run: |
-        echo "VITE_GOOGLE_CALENDAR_API_KEY=${{ vars.VITE_GOOGLE_CALENDAR_API_KEY }}" > .env
-        echo "VITE_GOOGLE_CALENDAR_ID=${{ vars.VITE_GOOGLE_CALENDAR_ID }}" >> .env
-        cat .env
+        echo "VITE_GOOGLE_CALENDAR_API_KEY=${{ secrets.VITE_GOOGLE_CALENDAR_API_KEY }}" > .env
+        echo "VITE_GOOGLE_CALENDAR_ID=${{ secrets.VITE_GOOGLE_CALENDAR_ID }}" >> .env
         
     - name: Build
       run: pnpm run build
