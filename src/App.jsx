@@ -3,12 +3,17 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import googleCalendarPlugin from '@fullcalendar/google-calendar'
-import { GOOGLE_CALENDAR_CONFIG } from './config'
 import './App.css'
 
 function App() {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showModal, setShowModal] = useState(false)
+
+  // Google Calendar configuration from environment variables
+  const GOOGLE_CALENDAR_CONFIG = {
+    API_KEY: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY,
+    CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID
+  }
 
   // Event type color mapping
   const eventTypeColors = {
