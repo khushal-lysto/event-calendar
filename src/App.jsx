@@ -12,12 +12,10 @@ function App() {
 
   // Event type color mapping
   const eventTypeColors = {
-    conference: '#4285f4',      // Blue for conferences
-    workshop: '#34a853',        // Green for workshops
-    meetup: '#ea4335',          // Red for meetups
-    hackathon: '#fbbc04',       // Yellow for hackathons
-    webinar: '#9c27b0',         // Purple for webinars
-    networking: '#ff9800',      // Orange for networking events
+    fest: '#4285f4',           // Blue for fests
+    sale: '#34a853',           // Green for sales
+    tournament: '#ea4335',      // Red for tournaments
+    conference: '#fbbc04',      // Yellow for conferences
     default: '#5f6368'          // Gray for unknown types
   }
 
@@ -29,12 +27,10 @@ function App() {
     
     // Keywords for different event types
     const typeKeywords = {
-      conference: ['conference', 'summit', 'symposium', 'convention', 'congress'],
-      workshop: ['workshop', 'training', 'tutorial', 'session', 'class'],
-      meetup: ['meetup', 'meeting', 'gathering', 'social'],
-      hackathon: ['hackathon', 'hack', 'coding', 'programming'],
-      webinar: ['webinar', 'webcast', 'online', 'virtual'],
-      networking: ['networking', 'mixer', 'reception', 'party']
+      fest: ['fest', 'festival', 'celebration', 'party', 'gathering'],
+      sale: ['sale', 'discount', 'offer', 'deal', 'promotion'],
+      tournament: ['tournament', 'competition', 'championship', 'match', 'game'],
+      conference: ['conference', 'summit', 'symposium', 'convention', 'congress']
     }
 
     // Check title, description, and location for keywords
