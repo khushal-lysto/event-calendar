@@ -15,6 +15,13 @@ function App() {
     CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID
   }
 
+  // Debug logging to check environment variables
+  console.log('Environment variables:', {
+    API_KEY: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY ? '✅ Loaded' : '❌ Missing',
+    CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID ? '✅ Loaded' : '❌ Missing'
+  })
+  console.log('Calendar config:', GOOGLE_CALENDAR_CONFIG)
+
   // Event type color mapping
   const eventTypeColors = {
     fest: '#4285f4',           // Blue for fests
@@ -165,6 +172,12 @@ function App() {
           events={{
             googleCalendarId: GOOGLE_CALENDAR_CONFIG.CALENDAR_ID,
             className: 'gcal-event'
+          }}
+          eventDidMount={(info) => {
+            console.log('Event mounted:', info.event.title)
+          }}
+          eventSourceFailure={(error) => {
+            console.error('Calendar API error:', error)
           }}
         />
       </div>
