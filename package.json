@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://khushalagrawal.github.io/calendar",
+  "homepage": "https://khushal-lysto.github.io/event-calendar",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

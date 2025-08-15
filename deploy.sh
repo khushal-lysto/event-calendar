@@ -11,4 +11,4 @@ echo "🌐 Deploying to GitHub Pages..."
 pnpm run deploy
 
 echo "✅ Deployment completed!"
-echo "🌍 Your app should be available at: https://khushalagrawal.github.io/calendar"
+echo "🌍 Your app should be available at: https://khushal-lysto.github.io/event-calendar"

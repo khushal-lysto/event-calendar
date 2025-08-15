@@ -75,7 +75,7 @@ npm run deploy
 
 ### Vite Configuration
 
-- Added `base: '/calendar/'` to handle the repository name in the URL
+- Added `base: '/event-calendar/'` to handle the repository name in the URL
 
 ## Troubleshooting
 
@@ -101,7 +101,7 @@ After deployment, you can verify by:
 ## URLs
 
 - **Local Development**: `http://localhost:5173`
-- **Production**: `https://khushalagrawal.github.io/calendar`
+- **Production**: `https://khushal-lysto.github.io/event-calendar`
 
 ## Support
 
