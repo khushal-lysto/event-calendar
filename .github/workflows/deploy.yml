@@ -48,6 +48,14 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       with:
         path: './dist'
+
+    - name: Generate runtime config (config.json)
+      run: |
+        mkdir -p dist
+        printf '{"apiKey":"%s","calendarId":"%s"}' \
+          "${{ secrets.VITE_GOOGLE_CALENDAR_API_KEY }}" \
+          "${{ secrets.VITE_GOOGLE_CALENDAR_ID }}" \
+          > dist/config.json
         
     - name: Deploy to GitHub Pages
       id: deployment

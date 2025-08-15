@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -9,10 +9,22 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
-  // Google Calendar configuration from environment variables
+  // Runtime config fetched from public/config.json
+  const [runtimeConfig, setRuntimeConfig] = useState(null)
+
+  useEffect(() => {
+    const runtimeConfigUrl = `${import.meta.env.BASE_URL || '/'}config.json`
+    fetch(runtimeConfigUrl, { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => setRuntimeConfig(json))
+      .catch(() => setRuntimeConfig(null))
+  }, [])
+
+  // Google Calendar configuration from environment variables (build-time)
+  // with fallback to runtime config
   const GOOGLE_CALENDAR_CONFIG = {
-    API_KEY: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY,
-    CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID
+    API_KEY: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY || runtimeConfig?.apiKey || '',
+    CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID || runtimeConfig?.calendarId || ''
   }
 
   // Debug logging to check environment variables
@@ -20,6 +32,7 @@ function App() {
     API_KEY: import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY ? '✅ Loaded' : '❌ Missing',
     CALENDAR_ID: import.meta.env.VITE_GOOGLE_CALENDAR_ID ? '✅ Loaded' : '❌ Missing'
   })
+  console.log('Runtime config present:', runtimeConfig ? '✅ Yes' : '❌ No')
   console.log('Calendar config:', GOOGLE_CALENDAR_CONFIG)
 
   // Event type color mapping
