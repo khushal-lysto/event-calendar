@@ -1,8 +1,15 @@
+body {
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
+  background-color: #f8f9fa;
 }
 
 .app {
@@ -10,6 +17,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #f8f9fa;
 }
 
 .app h1 {
@@ -64,10 +72,32 @@
   font-weight: 500;
 }
 
+/* API Status Styles */
+.api-status {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e8eaed;
+}
+
+.api-status h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
+
+.api-status p {
+  margin: 0;
+  font-size: 12px;
+  color: #5f6368;
+  text-align: left;
+}
+
 .calendar-container {
   width: 100%;
   max-width: 1200px;
-  background: white;
+  background: #e9ecef;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -149,7 +179,7 @@
   margin-bottom: 2px !important;
 }
 
-.event-type-badge {
+.event-game-badge {
   position: absolute !important;
   top: 2px !important;
   right: 2px !important;
@@ -172,6 +202,91 @@
 .gcal-event:hover {
   background-color: #3367d6 !important;
   border-color: #3367d6 !important;
+}
+
+/* Custom game type styles */
+.event-game-steam {
+  background-color: #1b2838 !important;
+  border-color: #1b2838 !important;
+  color: white !important;
+}
+
+.event-game-valorant {
+  background-color: #ff4655 !important;
+  border-color: #ff4655 !important;
+  color: white !important;
+}
+
+.event-game-roblox {
+  background-color: #00a2ff !important;
+  border-color: #00a2ff !important;
+  color: white !important;
+}
+
+.event-game-xbox {
+  background-color: #107c10 !important;
+  border-color: #107c10 !important;
+  color: white !important;
+}
+
+.event-game-psn {
+  background-color: #003791 !important;
+  border-color: #003791 !important;
+  color: white !important;
+}
+
+.event-game-dota {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: white !important;
+}
+
+.event-game-league {
+  background-color: #c89b3c !important;
+  border-color: #c89b3c !important;
+  color: white !important;
+}
+
+.event-game-csgo {
+  background-color: #f7931e !important;
+  border-color: #f7931e !important;
+  color: white !important;
+}
+
+.event-game-minecraft {
+  background-color: #62b47a !important;
+  border-color: #62b47a !important;
+  color: white !important;
+}
+
+.event-game-fortnite {
+  background-color: #ff6b35 !important;
+  border-color: #ff6b35 !important;
+  color: white !important;
+}
+
+.event-game-apex {
+  background-color: #da2929 !important;
+  border-color: #da2929 !important;
+  color: white !important;
+}
+
+.event-game-overwatch {
+  background-color: #ff9c00 !important;
+  border-color: #ff9c00 !important;
+  color: white !important;
+}
+
+.event-game-gaming {
+  background-color: #8e44ad !important;
+  border-color: #8e44ad !important;
+  color: white !important;
+}
+
+.event-game-default {
+  background-color: #5f6368 !important;
+  border-color: #5f6368 !important;
+  color: white !important;
 }
 
 .fc-day-today {
@@ -252,7 +367,7 @@
   position: relative;
 }
 
-.event-type-indicator {
+.event-game-indicator {
   position: absolute;
   top: 16px;
   left: 24px;
