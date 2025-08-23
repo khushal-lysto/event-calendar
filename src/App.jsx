@@ -12,6 +12,7 @@ function App() {
   const [apiEvents, setApiEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [calendarRef, setCalendarRef] = useState(null)
+  const [selectedGameFilters, setSelectedGameFilters] = useState(['steam', 'valorant', 'roblox', 'xbox', 'psn', 'dota', 'league', 'csgo', 'minecraft', 'fortnite', 'apex', 'overwatch', 'gaming'])
 
   // Runtime config fetched from public/config.json
   const [runtimeConfig, setRuntimeConfig] = useState(null)
@@ -202,6 +203,25 @@ function App() {
     return { game: 'default', color: gameColors.default }
   }
 
+  // Function to get all available game types
+  const getAvailableGameTypes = () => {
+    return [
+      { value: 'steam', label: 'Steam' },
+      { value: 'valorant', label: 'Valorant' },
+      { value: 'roblox', label: 'Roblox' },
+      { value: 'xbox', label: 'Xbox' },
+      { value: 'psn', label: 'PlayStation' },
+      { value: 'dota', label: 'Dota 2' },
+      { value: 'league', label: 'League of Legends' },
+      { value: 'csgo', label: 'CS:GO' },
+      { value: 'minecraft', label: 'Minecraft' },
+      { value: 'fortnite', label: 'Fortnite' },
+      { value: 'apex', label: 'Apex Legends' },
+      { value: 'overwatch', label: 'Overwatch' },
+      { value: 'gaming', label: 'General Gaming' }
+    ]
+  }
+
   // Function to filter events based on API data
   const shouldShowEvent = (event) => {
     console.log('🔍 Checking event:', event.title, 'API events loaded:', apiEvents.length, 'Is loading:', isLoading)
@@ -242,6 +262,64 @@ function App() {
     return isMatch
   }
 
+  // Function to filter events based on game type
+  const shouldShowEventByGameType = (event) => {
+    if (selectedGameFilters.length === 0) {
+      return false
+    }
+    
+    const { game } = getGameTypeAndColor(event)
+    return selectedGameFilters.includes(game)
+  }
+
+  // Handle individual game type checkbox change
+  const handleGameFilterToggle = (gameType) => {
+    if (selectedGameFilters.includes(gameType)) {
+      // Remove the game type
+      const updatedFilters = selectedGameFilters.filter(filter => filter !== gameType)
+      setSelectedGameFilters(updatedFilters)
+    } else {
+      // Add the game type
+      setSelectedGameFilters([...selectedGameFilters, gameType])
+    }
+    
+    // Refresh calendar to apply new filter
+    if (calendarRef) {
+      calendarRef.refetchEvents()
+    }
+  }
+
+  // Select all game types
+  const selectAllGames = () => {
+    const allGameTypes = getAvailableGameTypes().map(gameType => gameType.value)
+    setSelectedGameFilters(allGameTypes)
+    if (calendarRef) {
+      calendarRef.refetchEvents()
+    }
+  }
+
+  // Deselect all game types
+  const deselectAllGames = () => {
+    setSelectedGameFilters([])
+    if (calendarRef) {
+      calendarRef.refetchEvents()
+    }
+  }
+
+  // Combined filter function
+  const shouldShowEventCombined = (event) => {
+    return shouldShowEvent(event) && shouldShowEventByGameType(event)
+  }
+
+  // Handle game type filter change
+  const handleGameFilterChange = (newFilter) => {
+    setSelectedGameFilters(newFilter)
+    // Refresh calendar to apply new filter
+    if (calendarRef) {
+      calendarRef.refetchEvents()
+    }
+  }
+
   // Function to render event content with custom styling
   const renderEventContent = (eventInfo) => {
     const { game, color } = getGameTypeAndColor(eventInfo.event)
@@ -275,7 +353,7 @@ function App() {
     const event = arg.event
     
     // CHECK: Only handle clicks for events that should be shown
-    if (!shouldShowEvent(event)) {
+    if (!shouldShowEventCombined(event)) {
       console.log('🚫 Ignoring click on filtered event:', event.title)
       return
     }
@@ -348,59 +426,98 @@ function App() {
         </div>
       </div>
 
-      <div className="calendar-container">
-        <FullCalendar
-          ref={(el) => {
-            if (el) setCalendarRef(el.getApi())
-          }}
-          plugins={[dayGridPlugin, interactionPlugin, googleCalendarPlugin]}
-          initialView="dayGridMonth"
-          weekends={true}
-          dateClick={handleDateClick}
-          eventClick={handleEventClick}
-          eventContent={renderEventContent}
-          height="auto"
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,dayGridWeek'
-          }}
-          googleCalendarApiKey={GOOGLE_CALENDAR_CONFIG.API_KEY}
-          events={{
-            googleCalendarId: GOOGLE_CALENDAR_CONFIG.CALENDAR_ID,
-            className: 'gcal-event'
-          }}
-          eventSourceSuccess={(rawEvents, response) => {
-            console.log("📊 Raw events from Google:", rawEvents)
+      {/* Main Content Area with Sidebar and Calendar */}
+      <div className="main-content">
+        {/* Game Type Filter Sidebar */}
+        <div className="game-filter-sidebar">
+          <div className="filter-header">
+            <h3 className="filter-title">Filter by Game Type</h3>
+            <div className="filter-actions">
+              <button 
+                className="filter-action-btn select-all-btn"
+                onClick={selectAllGames}
+              >
+                Select All
+              </button>
+              <button 
+                className="filter-action-btn deselect-all-btn"
+                onClick={deselectAllGames}
+              >
+                Deselect All
+              </button>
+            </div>
+          </div>
+          
+          <div className="filter-checkboxes">
+            {getAvailableGameTypes().map((gameType) => (
+              <label key={gameType.value} className="filter-checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={selectedGameFilters.includes(gameType.value)}
+                  onChange={() => handleGameFilterToggle(gameType.value)}
+                  className="filter-checkbox"
+                />
+                <span className="filter-checkbox-label">{gameType.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
-            // Hide everything while API events are still loading
-            if (isLoading) {
-              console.log("⏳ API still loading, returning empty events")
-              return []
-            }
+        {/* Calendar Container */}
+        <div className="calendar-container">
+          <FullCalendar
+            ref={(el) => {
+              if (el) setCalendarRef(el.getApi())
+            }}
+            plugins={[dayGridPlugin, interactionPlugin, googleCalendarPlugin]}
+            initialView="dayGridMonth"
+            weekends={true}
+            dateClick={handleDateClick}
+            eventClick={handleEventClick}
+            eventContent={renderEventContent}
+            height="auto"
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,dayGridWeek'
+            }}
+            googleCalendarApiKey={GOOGLE_CALENDAR_CONFIG.API_KEY}
+            events={{
+              googleCalendarId: GOOGLE_CALENDAR_CONFIG.CALENDAR_ID,
+              className: 'gcal-event'
+            }}
+            eventSourceSuccess={(rawEvents, response) => {
+              console.log("📊 Raw events from Google:", rawEvents)
 
-            // If no API data -> show everything
-            if (apiEvents.length === 0) {
-              console.log("⚠️ No API filter, returning all events")
-              return rawEvents
-            }
+              // Hide everything while API events are still loading
+              if (isLoading) {
+                console.log("⏳ API still loading, returning empty events")
+                return []
+              }
 
-            // Filter by shouldShowEvent
-            const filtered = rawEvents.filter(ev => shouldShowEvent(ev))
-            console.log(`✅ Filtered events: ${filtered.length} / ${rawEvents.length}`)
-            return filtered
-          }}
-          eventDidMount={(info) => {
-            console.log('📅 Event mounted:', info.event.title)
-          }}
-          eventSourceFailure={(error) => {
-            console.error('❌ Calendar API error:', error)
-          }}
-          eventsDidSet={(events) => {
-            console.log(`📊 Final events after filtering: ${events.length}`)
-            setFilteredEvents(events)
-          }}
-        />
+              // If no API data -> show everything
+              if (apiEvents.length === 0) {
+                console.log("⚠️ No API filter, returning all events")
+                return rawEvents
+              }
+
+              // Filter by shouldShowEvent
+              const filtered = rawEvents.filter(ev => shouldShowEventCombined(ev))
+              console.log(`✅ Filtered events: ${filtered.length} / ${rawEvents.length}`)
+              return filtered
+            }}
+            eventDidMount={(info) => {
+              console.log('📅 Event mounted:', info.event.title)
+            }}
+            eventSourceFailure={(error) => {
+              console.error('❌ Calendar API error:', error)
+            }}
+            eventsDidSet={(events) => {
+              console.log(`📊 Final events after filtering: ${events.length}`)
+              setFilteredEvents(events)
+            }}
+          />
+        </div>
       </div>
 
       {/* Custom Event Modal */}
