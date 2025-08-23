@@ -55,7 +55,6 @@ jobs:
         printf '{"apiKey":"%s","calendarId":"%s","spreadsheetId":"%s"}' \
           "${{ secrets.VITE_GOOGLE_CALENDAR_API_KEY }}" \
           "${{ secrets.VITE_GOOGLE_CALENDAR_ID }}" \
-          "${{ secrets.VITE_SPREADSHEET_ID }}" \
           > dist/config.json
         
     - name: Deploy to GitHub Pages

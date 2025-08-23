@@ -11,6 +11,7 @@ function App() {
   const [filteredEvents, setFilteredEvents] = useState([])
   const [apiEvents, setApiEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [calendarRef, setCalendarRef] = useState(null)
 
   // Runtime config fetched from public/config.json
   const [runtimeConfig, setRuntimeConfig] = useState(null)
@@ -27,7 +28,7 @@ function App() {
   useEffect(() => {
     const loadApiEvents = async () => {
       setIsLoading(true)
-      console.log('🔄 Starting to load API events...')
+      console.log('📄 Starting to load API events...')
       
       try {
         const eventNames = await fetchApiEvents()
@@ -53,6 +54,15 @@ function App() {
     // Load API events immediately when component mounts
     loadApiEvents()
   }, []) // Empty dependency array means this runs once on mount
+
+  // Effect to refresh calendar when API events are loaded
+  useEffect(() => {
+    if (!isLoading && calendarRef) {
+      console.log('🔄 API events loaded, refreshing calendar with filter...')
+      // Force FullCalendar to refetch and reprocess events
+      calendarRef.refetchEvents()
+    }
+  }, [isLoading, apiEvents, calendarRef]) // Runs when loading state or API events change
 
   // Google Calendar configuration from environment variables (build-time)
   // with fallback to runtime config
@@ -130,7 +140,7 @@ function App() {
       })
       
       // Use fallback data if API fails
-      console.log('🔄 Using fallback events due to API failure')
+      console.log('📄 Using fallback events due to API failure')
       return FALLBACK_EVENTS
     }
   }
@@ -194,11 +204,17 @@ function App() {
 
   // Function to filter events based on API data
   const shouldShowEvent = (event) => {
-    console.log('🔍 Checking event:', event.title, 'API events:', apiEvents)
+    console.log('🔍 Checking event:', event.title, 'API events loaded:', apiEvents.length, 'Is loading:', isLoading)
+    
+    // IMPORTANT: If still loading API events, don't show any events yet
+    if (isLoading) {
+      console.log('⏳ Still loading API events, hiding all events temporarily')
+      return false
+    }
     
     if (apiEvents.length === 0) {
-      // If no API data, show all events
-      console.log('No API data, showing all events')
+      // If no API data after loading, show all events
+      console.log('⚠️ No API data available after loading, showing all events')
       return true
     }
     
@@ -213,7 +229,6 @@ function App() {
     const isMatch = apiEvents.some(apiEvent => {
       const apiEventLower = apiEvent.toLowerCase()
       const matches = eventTitle.includes(apiEventLower) || apiEventLower.includes(eventTitle)
-      console.log(`Comparing "${eventTitle}" with "${apiEventLower}": ${matches}`)
       return matches
     })
     
@@ -221,7 +236,7 @@ function App() {
     if (isMatch) {
       console.log(`✅ SHOWING: "${event.title}" - matches API event`)
     } else {
-      console.log(`❌ FILTERED OUT: "${event.title}" - no match in API`)
+      console.log(`❌ FILTERED OUT: "${event.title}" - no API match`)
     }
     
     return isMatch
@@ -229,11 +244,6 @@ function App() {
 
   // Function to render event content with custom styling
   const renderEventContent = (eventInfo) => {
-    // Only render events that should be shown
-    if (!shouldShowEvent(eventInfo.event)) {
-      return null
-    }
-    
     const { game, color } = getGameTypeAndColor(eventInfo.event)
     
     return (
@@ -263,6 +273,13 @@ function App() {
     arg.jsEvent.preventDefault()
     
     const event = arg.event
+    
+    // CHECK: Only handle clicks for events that should be shown
+    if (!shouldShowEvent(event)) {
+      console.log('🚫 Ignoring click on filtered event:', event.title)
+      return
+    }
+    
     const { game, color } = getGameTypeAndColor(event)
     
     setSelectedEvent({
@@ -309,6 +326,8 @@ function App() {
     }
   }
 
+  
+
   return (
     <div className="app">
       <h1>Game Conference Guide</h1>
@@ -327,22 +346,13 @@ function App() {
             </div>
           ))}
         </div>
-        
-        {/* API Status */}
-        <div className="api-status">
-          <h4>Event Filtering</h4>
-          {isLoading ? (
-            <p>🔄 Loading event filter from API...</p>
-          ) : apiEvents.length > 0 ? (
-            <p>✅ Filtering events using {apiEvents.length} approved events from API</p>
-          ) : (
-            <p>⚠️ No API data loaded - showing all events</p>
-          )}
-        </div>
       </div>
 
       <div className="calendar-container">
         <FullCalendar
+          ref={(el) => {
+            if (el) setCalendarRef(el.getApi())
+          }}
           plugins={[dayGridPlugin, interactionPlugin, googleCalendarPlugin]}
           initialView="dayGridMonth"
           weekends={true}
@@ -360,22 +370,35 @@ function App() {
             googleCalendarId: GOOGLE_CALENDAR_CONFIG.CALENDAR_ID,
             className: 'gcal-event'
           }}
-          eventDidMount={(info) => {
-            // Only log events that are actually being shown
-            if (shouldShowEvent(info.event)) {
-              console.log('📅 Event mounted:', info.event.title)
+          eventSourceSuccess={(rawEvents, response) => {
+            console.log("📊 Raw events from Google:", rawEvents)
+
+            // Hide everything while API events are still loading
+            if (isLoading) {
+              console.log("⏳ API still loading, returning empty events")
+              return []
             }
+
+            // If no API data -> show everything
+            if (apiEvents.length === 0) {
+              console.log("⚠️ No API filter, returning all events")
+              return rawEvents
+            }
+
+            // Filter by shouldShowEvent
+            const filtered = rawEvents.filter(ev => shouldShowEvent(ev))
+            console.log(`✅ Filtered events: ${filtered.length} / ${rawEvents.length}`)
+            return filtered
+          }}
+          eventDidMount={(info) => {
+            console.log('📅 Event mounted:', info.event.title)
           }}
           eventSourceFailure={(error) => {
             console.error('❌ Calendar API error:', error)
           }}
           eventsDidSet={(events) => {
-            const totalEvents = events.length
-            const filteredEvents = events.filter(event => shouldShowEvent(event))
-            console.log('📊 Calendar events summary:')
-            console.log(`   - Total events from Google Calendar: ${totalEvents}`)
-            console.log(`   - Events after filtering: ${filteredEvents.length}`)
-            console.log(`   - Events filtered out: ${totalEvents - filteredEvents.length}`)
+            console.log(`📊 Final events after filtering: ${events.length}`)
+            setFilteredEvents(events)
           }}
         />
       </div>
@@ -427,4 +450,3 @@ function App() {
 }
 
 export default App
-
