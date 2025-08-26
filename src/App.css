@@ -552,10 +552,12 @@ body {
   display: flex;
   gap: 12px;
   border-top: 1px solid #e8eaed;
+  flex-wrap: wrap;
 }
 
 .btn-copy-calendar {
   flex: 1;
+  min-width: 200px;
   padding: 12px 16px;
   border: 1px solid #dadce0;
   border-radius: 8px;
@@ -578,6 +580,33 @@ body {
 
 .btn-copy-calendar:active {
   background: #f1f3f4;
+}
+
+.btn-event-link {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 1px solid #4285f4;
+  border-radius: 8px;
+  background: #4285f4;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-event-link:hover {
+  background: #3367d6;
+  border-color: #3367d6;
+}
+
+.btn-event-link:active {
+  background: #2a56c6;
 }
 
 .btn-icon {
@@ -640,6 +669,10 @@ body {
   }
 
   .btn-copy-calendar {
+    width: 100%;
+  }
+
+  .btn-event-link {
     width: 100%;
   }
 }

@@ -32,17 +32,17 @@ function App() {
       console.log('📄 Starting to load API events...')
       
       try {
-        const eventNames = await fetchApiEvents()
-        console.log('✅ API events loaded successfully:', eventNames)
-        console.log('✅ Event names array:', eventNames)
-        console.log('✅ Array length:', eventNames.length)
-        console.log('✅ Is array?', Array.isArray(eventNames))
-        console.log('✅ Event names for filtering:', eventNames)
-        setApiEvents(eventNames)
+        const eventData = await fetchApiEvents()
+        console.log('✅ API events loaded successfully:', eventData)
+        console.log('✅ Event data array:', eventData)
+        console.log('✅ Array length:', eventData.length)
+        console.log('✅ Is array?', Array.isArray(eventData))
+        console.log('✅ Event data for filtering:', eventData)
+        setApiEvents(eventData)
         
         // Log summary after loading
         console.log('🎯 Event filtering summary:')
-        console.log(`   - API events loaded: ${eventNames.length}`)
+        console.log(`   - API events loaded: ${eventData.length}`)
         console.log(`   - Ready to filter calendar events`)
       } catch (error) {
         console.error('❌ Failed to load API events:', error)
@@ -79,8 +79,20 @@ function App() {
 
   // Fallback mock data in case API fails (for development/testing)
   const FALLBACK_EVENTS = [
-    'Steam Racing Fest',
-    'Steam 4X Fest'
+    {
+      row_number: 1,
+      Event: 'Steam Racing Fest',
+      Show: 'T',
+      Description: 'Fallback event description',
+      Link: 'https://store.steampowered.com/'
+    },
+    {
+      row_number: 2,
+      Event: 'Steam 4X Fest',
+      Show: 'T',
+      Description: 'Fallback event description',
+      Link: 'https://store.steampowered.com/'
+    }
   ]
 
   // Debug logging to check environment variables
@@ -118,20 +130,15 @@ function App() {
       console.log('📊 Response type:', typeof data)
       console.log('📊 Is array?', Array.isArray(data))
       
-      // Extract event names from the "Event" field
-      const eventNames = data
-        .map(item => {
-          console.log('Processing item:', item)
-          return item.Event
-        })
-        .filter(name => {
-          console.log('Filtering name:', name)
-          return name && name.trim() !== ''
-        })
+      // Return the full data array with Show field filtering
+      const filteredData = data.filter(item => {
+        console.log('Processing item:', item, 'Show field:', item.Show)
+        return item.Show === 'T' // Only show events where Show is 'T'
+      })
 
-      console.log('📊 Events from API "Event" field:', eventNames)
-      console.log('📋 Total events found:', eventNames.length)
-      return eventNames
+      console.log('📊 Filtered events (Show=T):', filteredData)
+      console.log('📋 Total events to show:', filteredData.length)
+      return filteredData
     } catch (error) {
       console.error('Error fetching API events:', error)
       console.error('Error details:', {
@@ -247,7 +254,7 @@ function App() {
     }
     
     const isMatch = apiEvents.some(apiEvent => {
-      const apiEventLower = apiEvent.toLowerCase()
+      const apiEventLower = apiEvent.Event.toLowerCase()
       const matches = eventTitle.includes(apiEventLower) || apiEventLower.includes(eventTitle)
       return matches
     })
@@ -360,6 +367,13 @@ function App() {
     
     const { game, color } = getGameTypeAndColor(event)
     
+    // Find the matching API event data
+    const apiEventData = apiEvents.find(apiEvent => {
+      const eventTitle = event.title?.toLowerCase() || ''
+      const apiEventTitle = apiEvent.Event?.toLowerCase() || ''
+      return eventTitle.includes(apiEventTitle) || apiEventTitle.includes(eventTitle)
+    })
+    
     setSelectedEvent({
       title: event.title,
       start: event.start,
@@ -367,7 +381,8 @@ function App() {
       url: event.url,
       extendedProps: event.extendedProps,
       game: game,
-      color: color
+      color: color,
+      apiData: apiEventData // Include the API data for description and link
     })
     setShowModal(true)
   }
@@ -404,7 +419,11 @@ function App() {
     }
   }
 
-  
+  const openEventLink = () => {
+    if (selectedEvent && selectedEvent.apiData && selectedEvent.apiData.Link) {
+      window.open(selectedEvent.apiData.Link, '_blank')
+    }
+  }
 
   return (
     <div className="app">
@@ -546,14 +565,32 @@ function App() {
                 </div>
               )}
               
-              {selectedEvent.extendedProps?.description && (
+              {/* Show API description if available */}
+              {selectedEvent.apiData?.Description && (
                 <div className="event-description">
-                  {selectedEvent.extendedProps.description}
+                  <h4>Description:</h4>
+                  <p>{selectedEvent.apiData.Description}</p>
+                </div>
+              )}
+              
+              {/* Show Google Calendar description if no API description */}
+              {!selectedEvent.apiData?.Description && selectedEvent.extendedProps?.description && (
+                <div className="event-description">
+                  <h4>Description:</h4>
+                  <p>{selectedEvent.extendedProps.description}</p>
                 </div>
               )}
             </div>
 
             <div className="modal-actions">
+              {/* Show API link if available */}
+              {selectedEvent.apiData?.Link && (
+                <button className="btn-event-link" onClick={openEventLink}>
+                  <span className="btn-icon">🔗</span>
+                  Open Event Link
+                </button>
+              )}
+              
               <button className="btn-copy-calendar" onClick={copyToCalendar}>
                 <span className="btn-icon">+</span>
                 Copy to my calendar
