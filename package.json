@@ -18,6 +18,8 @@
     "@fullcalendar/google-calendar": "^6.1.18",
     "@fullcalendar/interaction": "^6.1.18",
     "@fullcalendar/react": "^6.1.18",
+    "gapi-script": "^1.2.0",
+    "googleapis": "^159.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
