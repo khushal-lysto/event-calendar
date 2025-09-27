@@ -125,50 +125,6 @@ body {
 
 
 
-/* Event Legend Styles */
-.event-legend {
-  background: white;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 1200px;
-}
-
-.event-legend h3 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  text-align: left;
-}
-
-.legend-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: flex-start;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.legend-label {
-  font-size: 14px;
-  color: #5f6368;
-  font-weight: 500;
-}
 
 /* Main Content Layout */
 .main-content {
@@ -260,6 +216,14 @@ body {
   padding: 4px 0;
 }
 
+.filter-color-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
 .filter-checkbox {
   width: 16px;
   height: 16px;
@@ -344,6 +308,7 @@ body {
   border-radius: 6px !important;
   font-weight: 500 !important;
   transition: all 0.2s ease !important;
+  margin: 0 2px !important;
 }
 
 .fc-button:hover {
@@ -354,6 +319,11 @@ body {
 
 .fc-button:active {
   transform: translateY(0);
+}
+
+.fc-toolbar-title {
+  color: #000000 !important;
+  font-weight: 600 !important;
 }
 
 .fc-button-primary:not(:disabled).fc-button-active,
@@ -541,7 +511,7 @@ body {
 .modal-content {
   background: white;
   border-radius: 12px;
-  max-width: 500px;
+  max-width: 800px;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
@@ -628,7 +598,7 @@ body {
 .modal-content-layout {
   display: flex;
   gap: 24px;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .modal-content-layout.no-image {
@@ -644,7 +614,7 @@ body {
 
 .modal-image-section {
   flex-shrink: 0;
-  width: 200px;
+  width: 400px;
 }
 
 .event-image-container {
@@ -668,6 +638,7 @@ body {
 .event-location {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 16px;
   color: #5f6368;
   font-size: 14px;
@@ -753,6 +724,11 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
+  .modal-content {
+    max-width: 95vw;
+    margin: 0.5rem;
+  }
+
   .modal-content-layout {
     flex-direction: column;
     gap: 16px;
@@ -760,7 +736,7 @@ body {
 
   .modal-image-section {
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
     margin: 0 auto;
   }
 
@@ -844,5 +820,208 @@ body {
 
   .btn-event-link {
     width: 100%;
+  }
+}
+
+/* Navigation Styles */
+.main-app {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.nav-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  border-radius: 16px;
+  margin: 0 0 rem 2rem 0rem;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nav-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.nav-button.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button.active:hover {
+  background: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive navigation */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nav-title {
+    font-size: 1.5rem;
+  }
+
+  .nav-buttons {
+    justify-content: center;
+  }
+
+  .nav-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Event Link Styles */
+.event-link {
+  margin-top: 1rem;
+}
+
+.event-link h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.event-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.event-link-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.event-link-button:active {
+  transform: translateY(0);
+}
+
+.link-icon {
+  font-size: 1rem;
+}
+
+/* Configuration message styles */
+.config-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.config-content {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  text-align: center;
+}
+
+.config-content h2 {
+  color: #495057;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.config-content p {
+  color: #6c757d;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.config-content ol,
+.config-content ul {
+  text-align: left;
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.config-content li {
+  color: #495057;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.config-content code {
+  background: #e9ecef;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #e83e8c;
+  font-size: 0.9rem;
+}
+
+.config-content strong {
+  color: #495057;
+}
+
+/* Responsive event link */
+@media (max-width: 768px) {
+  .event-link-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .config-content {
+    padding: 1.5rem;
+    margin: 1rem;
   }
 }
