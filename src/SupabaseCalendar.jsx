@@ -23,11 +23,16 @@ function SupabaseCalendar() {
         // Check if Supabase is configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        
-        if (!supabaseUrl || !supabaseKey || 
-            supabaseUrl === 'YOUR_SUPABASE_URL' || 
-            supabaseKey === 'YOUR_SUPABASE_ANON_KEY') {
-          console.warn("⚠️ Supabase not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY");
+
+        if (
+          !supabaseUrl ||
+          !supabaseKey ||
+          supabaseUrl === "YOUR_SUPABASE_URL" ||
+          supabaseKey === "YOUR_SUPABASE_ANON_KEY"
+        ) {
+          console.warn(
+            "⚠️ Supabase not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY"
+          );
           setEvents([]);
           setCategories([]);
           setIsLoading(false);
@@ -37,19 +42,19 @@ function SupabaseCalendar() {
         // Fetch events and categories in parallel
         const [eventsData, categoriesData] = await Promise.all([
           fetchCalendarEvents(),
-          fetchCategories()
+          fetchCategories(),
         ]);
 
         console.log("✅ Data loaded successfully:", {
           events: eventsData.length,
-          categories: categoriesData.length
+          categories: categoriesData.length,
         });
 
         setEvents(eventsData);
         setCategories(categoriesData);
-        
+
         // Initialize with all categories selected
-        setSelectedCategoryFilters(categoriesData.map(cat => cat.id));
+        setSelectedCategoryFilters(categoriesData.map((cat) => cat.id));
       } catch (error) {
         console.error("❌ Failed to load data:", error);
         setEvents([]);
@@ -68,7 +73,7 @@ function SupabaseCalendar() {
       return [];
     }
 
-    return events.filter(event => 
+    return events.filter((event) =>
       selectedCategoryFilters.includes(event.extendedProps.categoryId)
     );
   };
@@ -77,18 +82,18 @@ function SupabaseCalendar() {
   const handleCategoryFilterToggle = (categoryId) => {
     if (selectedCategoryFilters.includes(categoryId)) {
       // Remove the category
-      setSelectedCategoryFilters(prev => 
-        prev.filter(id => id !== categoryId)
+      setSelectedCategoryFilters((prev) =>
+        prev.filter((id) => id !== categoryId)
       );
     } else {
       // Add the category
-      setSelectedCategoryFilters(prev => [...prev, categoryId]);
+      setSelectedCategoryFilters((prev) => [...prev, categoryId]);
     }
   };
 
   // Select all categories
   const selectAllCategories = () => {
-    setSelectedCategoryFilters(categories.map(cat => cat.id));
+    setSelectedCategoryFilters(categories.map((cat) => cat.id));
   };
 
   // Deselect all categories
@@ -99,14 +104,14 @@ function SupabaseCalendar() {
   // Handle event click
   const handleEventClick = (arg) => {
     arg.jsEvent.preventDefault();
-    
+
     const event = arg.event;
     setSelectedEvent({
       title: event.title,
       start: event.start,
       end: event.end,
       color: event.color,
-      extendedProps: event.extendedProps
+      extendedProps: event.extendedProps,
     });
     setShowModal(true);
   };
@@ -157,42 +162,49 @@ function SupabaseCalendar() {
     if (!selectedEvent) return;
 
     const formatDateForGoogleCalendar = (date) => {
-      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+      return date
+        .toISOString()
+        .replace(/[-:]/g, "")
+        .replace(/\.\d{3}/, "");
     };
 
     const startDate = formatDateForGoogleCalendar(selectedEvent.start);
-    const endDate = selectedEvent.end 
+    const endDate = selectedEvent.end
       ? formatDateForGoogleCalendar(selectedEvent.end)
-      : formatDateForGoogleCalendar(new Date(selectedEvent.start.getTime() + 60 * 60 * 1000)); // Default 1 hour duration
+      : formatDateForGoogleCalendar(
+          new Date(selectedEvent.start.getTime() + 60 * 60 * 1000)
+        ); // Default 1 hour duration
 
-    const description = selectedEvent.extendedProps?.description || '';
-    const location = selectedEvent.extendedProps?.location || '';
-    const link = selectedEvent.extendedProps?.link || '';
+    const description = selectedEvent.extendedProps?.description || "";
+    const location = selectedEvent.extendedProps?.location || "";
+    const link = selectedEvent.extendedProps?.link || "";
 
     // Combine description with link if available
-    const fullDescription = `${description}${link ? `\n\nEvent Link: ${link}` : ''}`;
+    const fullDescription = `${description}${
+      link ? `\n\nEvent Link: ${link}` : ""
+    }`;
 
     // Create Google Calendar URL
-    const googleCalendarUrl = new URL('https://calendar.google.com/calendar/render');
-    googleCalendarUrl.searchParams.set('action', 'TEMPLATE');
-    googleCalendarUrl.searchParams.set('text', selectedEvent.title);
-    googleCalendarUrl.searchParams.set('dates', `${startDate}/${endDate}`);
-    googleCalendarUrl.searchParams.set('details', fullDescription);
-    
+    const googleCalendarUrl = new URL(
+      "https://calendar.google.com/calendar/render"
+    );
+    googleCalendarUrl.searchParams.set("action", "TEMPLATE");
+    googleCalendarUrl.searchParams.set("text", selectedEvent.title);
+    googleCalendarUrl.searchParams.set("dates", `${startDate}/${endDate}`);
+    googleCalendarUrl.searchParams.set("details", fullDescription);
+
     if (location) {
-      googleCalendarUrl.searchParams.set('location', location);
+      googleCalendarUrl.searchParams.set("location", location);
     }
 
     // Open Google Calendar in new tab
-    window.open(googleCalendarUrl.toString(), '_blank');
+    window.open(googleCalendarUrl.toString(), "_blank");
   };
-
 
   const filteredEvents = getFilteredEvents();
 
   return (
     <div className="app">
-      
       {/* Loading indicator */}
       {isLoading && (
         <div className="auto-refresh-indicator">
@@ -208,23 +220,41 @@ function SupabaseCalendar() {
             <h2>🔧 Supabase Configuration Required</h2>
             <p>To use the Supabase Calendar, please:</p>
             <ol>
-              <li>Copy <code>env.template</code> to <code>.env</code></li>
+              <li>
+                Copy <code>env.template</code> to <code>.env</code>
+              </li>
               <li>Add your Supabase URL and Anon Key</li>
               <li>Run the database schema in Supabase</li>
               <li>Refresh the page</li>
             </ol>
-            <p><strong>Environment Variables Needed:</strong></p>
+            <p>
+              <strong>Environment Variables Needed:</strong>
+            </p>
             <ul>
-              <li><code>VITE_SUPABASE_URL</code> - Your Supabase project URL</li>
-              <li><code>VITE_SUPABASE_ANON_KEY</code> - Your Supabase anon key</li>
+              <li>
+                <code>VITE_SUPABASE_URL</code> - Your Supabase project URL
+              </li>
+              <li>
+                <code>VITE_SUPABASE_ANON_KEY</code> - Your Supabase anon key
+              </li>
             </ul>
-            <div style={{ marginTop: '1rem', padding: '1rem', background: '#e3f2fd', borderRadius: '8px' }}>
-              <p><strong>Note:</strong> Once configured, this calendar will display gaming events from your Supabase database with category filtering and event details.</p>
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                background: "#e3f2fd",
+                borderRadius: "8px",
+              }}
+            >
+              <p>
+                <strong>Note:</strong> Once configured, this calendar will
+                display gaming events from your Supabase database with category
+                filtering and event details.
+              </p>
             </div>
           </div>
         </div>
       )}
-
 
       {/* Main Content Area with Sidebar and Calendar */}
       <div className="main-content">
@@ -276,6 +306,7 @@ function SupabaseCalendar() {
             dateClick={handleDateClick}
             eventClick={handleEventClick}
             height="auto"
+            displayEventTime={false}
             headerToolbar={{
               left: "prev,next today",
               center: "title",
@@ -299,7 +330,8 @@ function SupabaseCalendar() {
                 className="event-game-indicator"
                 style={{ backgroundColor: selectedEvent.color }}
               >
-                {selectedEvent.extendedProps?.category?.toUpperCase() || 'EVENT'}
+                {selectedEvent.extendedProps?.category?.toUpperCase() ||
+                  "EVENT"}
               </div>
               <h2>{selectedEvent.title}</h2>
               <p className="event-date">
@@ -315,7 +347,11 @@ function SupabaseCalendar() {
                 </div>
               )}
 
-              <div className={`modal-content-layout ${!selectedEvent.extendedProps?.image ? 'no-image' : ''}`}>
+              <div
+                className={`modal-content-layout ${
+                  !selectedEvent.extendedProps?.image ? "no-image" : ""
+                }`}
+              >
                 {/* Left side - Description */}
                 <div className="modal-description-section">
                   {selectedEvent.extendedProps?.description && (
