@@ -50,11 +50,21 @@ function SupabaseCalendar() {
           categories: categoriesData.length,
         });
 
-        setEvents(eventsData);
-        setCategories(categoriesData);
+        // Only show categories that are actually used by events
+        const usedCategoryIds = new Set(
+          eventsData
+            .map((evt) => evt?.extendedProps?.categoryId)
+            .filter((id) => id != null)
+        );
+        const filteredCategories = categoriesData.filter((cat) =>
+          usedCategoryIds.has(cat.id)
+        );
 
-        // Initialize with all categories selected
-        setSelectedCategoryFilters(categoriesData.map((cat) => cat.id));
+        setEvents(eventsData);
+        setCategories(filteredCategories);
+
+        // Initialize with all used categories selected
+        setSelectedCategoryFilters(filteredCategories.map((cat) => cat.id));
       } catch (error) {
         console.error("❌ Failed to load data:", error);
         setEvents([]);

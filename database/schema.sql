@@ -49,12 +49,13 @@ INSERT INTO categories (name, color) VALUES
 ('Xbox', '#107c10'),            -- Xbox platform
 ('Roblox', '#00a2ff'),          -- Roblox platform
 ('Minecraft', '#62b47a'),       -- Minecraft game
-('Dota 2', '#ff6b35'),          -- Dota 2 game
 ('BGMI', '#da2929'),            -- Battlegrounds Mobile India
-('League of Legends', '#c89b3c'), -- League of Legends game
-('GTA', '#f7931e'),             -- Grand Theft Auto
 ('Free Fire', '#ff9c00'),       -- Free Fire game
-('The Game Awards', '#fd79a8'), -- The Game Awards
-('Tokyo Game Show', '#6c5ce7'), -- Tokyo Game Show
-('Rockstar', '#e17055')         -- Rockstar Games
+('GPRC', '#8b5cf6'),            -- GPRC
+('MOBA Legends', '#10b981'),    -- MOBA Legends (Moonton)
+('Genshin Impact', '#4f46e5'),  -- Genshin Impact (HoYoverse)
+('Honkai Star Rail', '#7c3aed'), -- Honkai Star Rail (HoYoverse)
+('Marvel Rivals', '#dc2626'),   -- Marvel Rivals (NetEase)
+('Razer Gold', '#00ff87'),      -- Razer Gold
+('Zenless Zone Zero', '#06b6d4') -- Zenless Zone Zero (HoYoverse)
 ON CONFLICT (name) DO NOTHING;
